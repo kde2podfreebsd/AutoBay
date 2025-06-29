@@ -1,0 +1,14 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
+
+TOKEN = os.getenv("TOKEN")
+ADMIN_CHAT_ID = 257524397  
+ADMINS = [406149871, 257524397]  
+DB_PATH = 'orders.db'
+YOOKASSA_PROVIDER_TOKEN = os.getenv("YOOKASSA_PROVIDER_TOKEN")
+YOOMONEY_PROVIDER_TOKEN = os.getenv("YOOMONEY_PROVIDER_TOKEN")
+YOOMONEY_CLIENT_CARDID = os.getenv("YOOMONEY_CLIENT_CARDID")
+PAGE_SIZE = 1
+
+
