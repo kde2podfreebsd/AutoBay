@@ -17,7 +17,7 @@ def paginate(items, page):
 async def admin_menu(msg):
     if msg.from_user.id not in config.ADMINS:
         return
-    # подсчёт заявок по статусам
+
     count_new = len(db.get_orders_by_status('new'))
     count_paid = len(db.get_orders_by_status('paid'))
     count_work = len(db.get_orders_by_status('in_work'))
