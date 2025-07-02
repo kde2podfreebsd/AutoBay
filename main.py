@@ -14,6 +14,9 @@ import handlers.admin.service_prices
 import handlers.client_auto
 import handlers.payments.yoomoney
 import handlers.payments.yookassa
+import handlers.client_details_to
+import handlers.client_response
+import handlers.admin.order_detail_responses
 
 init_db()
 

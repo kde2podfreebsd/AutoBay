@@ -45,7 +45,6 @@ async def admin_set_price(c):
     if c.from_user.id not in config.ADMINS:
         await bot.answer_callback_query(c.id, text="Доступ запрещён", show_alert=True)
         return
-    # c.data вида "admin:prices:set:<service_key>"
     _, key = c.data.rsplit(":", 1)
     admin_price_states[c.from_user.id] = key
     current = get_service_price(key)

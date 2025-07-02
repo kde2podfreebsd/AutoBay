@@ -2,6 +2,7 @@ from bot import bot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import query_answers
 from handlers.client_auto import auto_states  # для сброса состояния автоподбора
+from handlers.client_details_to import details_to_states  # для сброса state «детали для ТО»
 
 @bot.message_handler(commands=['start'])
 async def start(message):
@@ -17,7 +18,10 @@ async def start(message):
 
 @bot.callback_query_handler(func=lambda call: call.data == query_answers.MENU)
 async def menu(call):
+    # Сбрасываем все клиентские стейты
     auto_states.pop(call.from_user.id, None)
+    details_to_states.pop(call.from_user.id, None)
+
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
         InlineKeyboardButton("Детали для ТО", callback_data=query_answers.DETAILS_TO),
