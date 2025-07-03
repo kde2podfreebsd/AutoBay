@@ -45,6 +45,15 @@ DETAILS_TO_EDIT        = "details_to:edit"
 DETAILS_TO_SEND        = "details_to:send"
 DETAILS_TO_PHOTO_VIEW  = "details_to:view_photo"
 
+# Клиент «Детали на заказ»
+DETAILS_ORDER_BACK        = "details_order:back"
+DETAILS_ORDER_LINK_SKIP   = "details_order:link_skip"
+DETAILS_ORDER_PHOTOS_SKIP = "details_order:photos_skip"
+DETAILS_ORDER_NEXT        = "details_order:next"
+DETAILS_ORDER_EDIT        = "details_order:edit"
+DETAILS_ORDER_SEND        = "details_order:send"
+DETAILS_ORDER_PHOTO_VIEW  = "details_order:view_photo"
+
 # Админский flow ответа
 ADMIN_RESPOND             = "admin:respond"
 ADMIN_RESPOND_PHOTOS_SKIP = "admin:respond:photos_skip"
@@ -55,6 +64,7 @@ ADMIN_RESPOND_SEND        = "admin:respond:send"
 
 # Кнопка «Просмотреть ответ» в админке
 ADMIN_VIEW_RESPONSE       = "admin:view_response"
+ADMIN_VIEW_RESPONSE_PHOTO = "admin:view_response:photo"
 
 # Просмотр фото заявки в админке
 ADMIN_ORDER_PHOTO_VIEW    = "admin:order:photo_view"

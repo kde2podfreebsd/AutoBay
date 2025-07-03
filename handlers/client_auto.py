@@ -1,7 +1,7 @@
 from bot import bot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import query_answers
-from db.repository import create_order, get_service_price
+from db.repository import create_order, get_service_price, update_order_data, get_order
 import config
 
 auto_states = {}
@@ -146,7 +146,6 @@ async def auto_fuel_next(c):
     text = f"✅ Подтвердите заявку:\n\n{summary}\n\n💰 Стоимость услуги: {price} ₽"
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
-        InlineKeyboardButton("✏️ Редактировать", callback_data=query_answers.AUTO_EDIT),
         InlineKeyboardButton("🚀 Отправить заявку", callback_data=query_answers.AUTO_SEND),
         InlineKeyboardButton("↩️ Назад", callback_data=query_answers.AUTO_BACK),
         InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU)
@@ -177,5 +176,6 @@ async def auto_send(c):
         message_id=state["message_id"],
         reply_markup=markup
     )
+
     await bot.answer_callback_query(c.id)
     del auto_states[c.from_user.id]

@@ -17,6 +17,7 @@ import handlers.payments.yookassa
 import handlers.client_details_to
 import handlers.client_response
 import handlers.admin.order_detail_responses
+import handlers.client_details_order
 
 init_db()
 
