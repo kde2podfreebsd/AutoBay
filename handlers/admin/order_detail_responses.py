@@ -4,7 +4,6 @@ import query_answers
 from db.repository import get_order, update_order_data
 from telebot import types
 
-# Состояние для составления ответов админа
 respond_states = {}
 RESP_STEPS = ["text", "photos", "preview"]
 
@@ -144,7 +143,6 @@ async def handle_send_response(c):
         f"📩 Ответ администратора по заявке #{order_id}. Пожалуйста, подтвердите:",
         reply_markup=markup
     )
-    # Уведомляем админа
     await bot.send_message(
         c.message.chat.id,
         f"✔️ Ответ отправлен клиенту по заявке #{order_id}.",
@@ -154,11 +152,14 @@ async def handle_send_response(c):
     )
     await bot.answer_callback_query(c.id)
 
-@bot.callback_query_handler(func=lambda c: c.data.startswith(query_answers.ADMIN_VIEW_RESPONSE))
+@bot.callback_query_handler(
+    func=lambda c: c.data.startswith(query_answers.ADMIN_VIEW_RESPONSE + ":")
+            and len(c.data.split(":")) in (3, 4)
+)
 async def admin_view_response(c):
     parts = c.data.split(":")
+    # Показать список всех ответов
     if len(parts) == 3:
-        # Показать список всех ответов
         order_id = int(parts[2])
         o = get_order(order_id)
         d = o.data
@@ -177,8 +178,9 @@ async def admin_view_response(c):
             reply_markup=kb
         )
         await bot.answer_callback_query(c.id)
+
+    # Показать конкретный ответ (текст + кнопки Фото)
     elif len(parts) == 4:
-        # Показать конкретный ответ
         order_id = int(parts[2])
         idx = int(parts[3])
         o = get_order(order_id)
@@ -190,8 +192,13 @@ async def admin_view_response(c):
         resp = resp_list[idx]
         text = resp.get("text", "")
         kb = InlineKeyboardMarkup(row_width=1)
-        for photo_idx, fid in enumerate(resp.get("photos", [])):
-            kb.add(InlineKeyboardButton(f"Фото {photo_idx+1}", callback_data=f"{query_answers.ADMIN_RESPOND_PHOTO_VIEW}:{photo_idx}"))
+        for photo_idx, _ in enumerate(resp.get("photos", [])):
+            kb.add(
+                InlineKeyboardButton(
+                    f"Фото {photo_idx+1}",
+                    callback_data=f"{query_answers.ADMIN_VIEW_RESPONSE_PHOTO}:{order_id}:{idx}:{photo_idx}"
+                )
+            )
         kb.add(
             InlineKeyboardButton("🔙 Все ответы", callback_data=f"{query_answers.ADMIN_VIEW_RESPONSE}:{order_id}"),
             InlineKeyboardButton("🔙 Назад к заявке", callback_data=f"{query_answers.ADMIN_ORDER}:{order_id}")
@@ -203,3 +210,35 @@ async def admin_view_response(c):
             reply_markup=kb
         )
         await bot.answer_callback_query(c.id)
+
+@bot.callback_query_handler(
+    func=lambda c: c.data.startswith(query_answers.ADMIN_VIEW_RESPONSE_PHOTO + ":")
+)
+async def handle_view_response_photo(c):
+    parts = c.data.split(":")
+    # ["admin","view_response","photo","<order_id>","<resp_idx>","<photo_idx>"]
+    try:
+        order_id = int(parts[3])
+        resp_idx  = int(parts[4])
+        photo_idx = int(parts[5])
+    except (ValueError, IndexError):
+        await bot.answer_callback_query(c.id, text="Неверный формат данных", show_alert=True)
+        return
+
+    o = get_order(order_id)
+    if o is None:
+        await bot.answer_callback_query(c.id, text=f"Заявка #{order_id} не найдена", show_alert=True)
+        return
+
+    resp_list = o.data.get("responses", [])
+    if resp_idx < 0 or resp_idx >= len(resp_list):
+        await bot.answer_callback_query(c.id, text="Ответ не найден", show_alert=True)
+        return
+
+    photos = resp_list[resp_idx].get("photos", [])
+    if photo_idx < 0 or photo_idx >= len(photos):
+        await bot.answer_callback_query(c.id, text="Фото не найдено", show_alert=True)
+        return
+
+    await bot.send_photo(c.message.chat.id, photos[photo_idx])
+    await bot.answer_callback_query(c.id)

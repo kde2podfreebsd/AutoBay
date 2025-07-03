@@ -6,7 +6,7 @@ from db.repository import get_service_price, set_service_price
 
 SERVICE_LABELS = {
     "auto": "Подбор авто",
-    "details_to": "Деталь для ТО",
+    # "details_to": "Деталь для ТО",
     "details_order": "Деталь на заказ"
 }
 

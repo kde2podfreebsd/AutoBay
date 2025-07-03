@@ -7,6 +7,11 @@ import query_answers
 async def _create_yookassa_invoice(chat_id: int, order_id: int, amount_rub: int):
     payload = f"uk_{order_id}"
     prices = [LabeledPrice(label="Оплата услуги", amount=amount_rub * 100)]
+    markup = InlineKeyboardMarkup(row_width=1)
+    markup.add(
+        InlineKeyboardButton("◀️ Другой способ оплаты", callback_data=f"{query_answers.PAY_SELECT}:{order_id}"),
+        InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU)
+    )
     msg = await bot.send_invoice(
         chat_id=chat_id,
         title="💳 Оплата услуги подбора авто",
@@ -40,17 +45,19 @@ async def pay_yookassa(c):
         await bot.answer_callback_query(c.id, text="⚠️ Ошибка формирования счёта. Проверьте сумму.", show_alert=True)
         return
 
-    # Сообщение с выбором дальнейших действий
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(
         InlineKeyboardButton("◀️ Другой способ оплаты", callback_data=f"{query_answers.PAY_SELECT}:{order_id}"),
         InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU)
     )
-    await bot.send_message(
+    msg = await bot.send_message(
         c.message.chat.id,
         f"Для заявки #{order_id} вы можете выбрать другой способ или вернуться в меню:",
         reply_markup=markup
     )
+    data = o.data
+    data['uk_invoice_message_id_pay_select'] = msg.message_id
+    update_order_data(order_id, data)
     await bot.answer_callback_query(c.id)
 
 @bot.pre_checkout_query_handler(func=lambda q: True)
@@ -66,10 +73,14 @@ async def handle_successful_payment(msg):
         order_id = int(payload.split('_', 1)[1])
         o = get_order(order_id)
         data = o.data
-        data['service_paid'] = True
-        data['service_payment_id'] = provider_id
-        update_order_data(order_id, data)
-        update_order_payment_status(order_id, 'paid')
+
+        if o.type == "details_order":
+            data['service_paid'] = True
+            update_order_data(order_id, data)
+        else:
+            data['service_paid'] = True
+            update_order_data(order_id, data)
+            update_order_payment_status(order_id, 'paid')
 
         markup = InlineKeyboardMarkup(row_width=1)
         markup.add(InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU))
@@ -81,6 +92,6 @@ async def handle_successful_payment(msg):
         )
         await bot.send_message(
             config.ADMIN_CHAT_ID,
-            f"Оплачена услуга подбора авто, заявка #{order_id}, payment_id: {provider_id}"
+            f"Оплачена заявка #{order_id}, payment_id: {provider_id}"
         )
         return
