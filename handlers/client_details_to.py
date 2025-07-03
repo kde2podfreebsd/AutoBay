@@ -3,17 +3,14 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import query_answers
 from db.repository import create_order
 
-# Хранилище состояний заявок «Детали для ТО»
 details_to_states = {}
 
-# Последовательность шагов
 STEPS = ["brand", "model", "year", "vin", "name", "link", "photos", "review"]
 
 def format_summary(data: dict, step: str) -> str:
     """Формирует сводку по уже введённым полям, в зависимости от текущего шага."""
     step_idx = STEPS.index(step)
     lines = []
-    # Базовые обязательные поля: показываем, если шаг дальше этого поля
     for field, label in [
         ("brand", "🚗 Марка"),
         ("model", "🚗 Модель"),
@@ -24,14 +21,12 @@ def format_summary(data: dict, step: str) -> str:
         if data.get(field) and step_idx > STEPS.index(field):
             lines.append(f"{label}: {data[field]}")
 
-    # Ссылка – только на этапе review или после шага link
     if step == "review":
         link = data.get("link", "")
         lines.append(f"🔗 Ссылка: {link or '—'}")
     elif step_idx > STEPS.index("link") and data.get("link"):
         lines.append(f"🔗 Ссылка: {data['link']}")
 
-    # Фото – отображаем количество на шагах photos и review
     if step == "review":
         cnt = len(data.get("photos", []))
         lines.append(f"📸 Фото: {cnt} шт." if cnt else "📸 Фото: —")
@@ -88,7 +83,6 @@ async def render_step(chat_id: int, message_id: int, data: dict, step: str):
 
     elif step == "photos":
         text = f"📸 Прикрепите фото (можно несколько) или нажмите «Пропустить»:\n\n{summary}"
-        # Кнопки просмотра уже добавленных фото
         for i in range(len(data.get("photos", []))):
             markup.add(
                 InlineKeyboardButton(f"📷 {i+1}", callback_data=f"{query_answers.DETAILS_TO_PHOTO_VIEW}:{i}")
@@ -102,7 +96,6 @@ async def render_step(chat_id: int, message_id: int, data: dict, step: str):
 
     elif step == "review":
         text = f"✅ Проверьте заявку:\n\n{format_summary(data, 'review')}"
-        # Повторно кнопки просмотра фото
         for i in range(len(data.get("photos", []))):
             markup.add(
                 InlineKeyboardButton(f"📷 {i+1}", callback_data=f"{query_answers.DETAILS_TO_PHOTO_VIEW}:{i}")
@@ -191,7 +184,6 @@ async def details_to_photo_view(c):
 
 @bot.callback_query_handler(func=lambda c: c.data == query_answers.DETAILS_TO_EDIT)
 async def details_to_edit(c):
-    # Перезапустить процесс с шага brand
     await start_details_to(c)
 
 @bot.callback_query_handler(func=lambda c: c.data == query_answers.DETAILS_TO_SEND)
@@ -203,14 +195,12 @@ async def details_to_send(c):
         type="details_to",
         data=state["data"]
     )
-    # Редактируем текущее сообщение, вместо отправки нового
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU))
     await bot.edit_message_text(
-        f"📬 Ваша заявка #{order_id} принята.",
+        f"📬 Ваша заявка принята. Ближайшее время менеджер обработает вашу заявку и направит ответ в телеграмм бота.",
         chat_id=c.message.chat.id,
         message_id=state["message_id"],
         reply_markup=markup
     )
-    # Удаляем стейт
     details_to_states.pop(c.from_user.id, None)

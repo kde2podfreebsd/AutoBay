@@ -52,7 +52,7 @@ async def pay_yookassa(c):
     )
     msg = await bot.send_message(
         c.message.chat.id,
-        f"Для заявки #{order_id} вы можете выбрать другой способ или вернуться в меню:",
+        f"Вы можете оплатить счет выше, выбрать другой способ оплаты (YooMoney) или вернуться в меню:",
         reply_markup=markup
     )
     data = o.data
@@ -87,11 +87,11 @@ async def handle_successful_payment(msg):
 
         await bot.send_message(
             msg.chat.id,
-            f"✅ Оплата заявки #{order_id} подтверждена.",
+            f"✅ Оплата заявка подтверждена. Ближайшее время менеджер обработает вашу заявку и свяжется с Вами в личных сообщениях телеграмм.\n⚠️ Проверьте, что у Вас открыты личные сообщения, что бы наш менеджер смог Вам написать.",
             reply_markup=markup
         )
         await bot.send_message(
             config.ADMIN_CHAT_ID,
-            f"Оплачена заявка #{order_id}, payment_id: {provider_id}"
+            f"Оплачена заявка payment_id: {provider_id}."
         )
         return

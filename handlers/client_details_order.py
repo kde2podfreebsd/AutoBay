@@ -209,7 +209,7 @@ async def details_order_send(c):
         InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU),
     )
     await bot.edit_message_text(
-        f"📬 Ваша заявка #{order_id} создана. Оплатите услугу подбора:",
+        f"📬 Ваша заявка создана. Оплатите услугу подбора:",
         chat_id=c.message.chat.id,
         message_id=st["message_id"],
         reply_markup=kb,

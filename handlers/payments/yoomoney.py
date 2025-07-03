@@ -53,7 +53,7 @@ async def check_yoomoney(c):
         update_order_payment_status(order_id, "paid")
     markup = InlineKeyboardMarkup(row_width=1)
     markup.add(InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU))
-    await bot.edit_message_text(f"✅ Платёж по заявке #{order_id} подтверждён.", chat_id=c.message.chat.id, message_id=c.message.message_id, reply_markup=markup)
+    await bot.edit_message_text(f"✅ Платёж по заявке подтверждён. Проверьте, что у Вас открыты личные сообщения, что бы наш менеджер смог Вам написать", chat_id=c.message.chat.id, message_id=c.message.message_id, reply_markup=markup)
     await bot.answer_callback_query(c.id)
 
 @bot.callback_query_handler(func=lambda c: c.data.startswith(query_answers.PAY_SELECT))
