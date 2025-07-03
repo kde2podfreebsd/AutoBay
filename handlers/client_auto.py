@@ -171,7 +171,7 @@ async def auto_send(c):
         InlineKeyboardButton("🏠 В меню", callback_data=query_answers.MENU)
     )
     await bot.edit_message_text(
-        f"📬 Ваша заявка #{order_id} создана. Выберите метод оплаты:",
+        f"📬 Ваша заявка создана. Выберите метод оплаты:",
         chat_id=c.message.chat.id,
         message_id=state["message_id"],
         reply_markup=markup

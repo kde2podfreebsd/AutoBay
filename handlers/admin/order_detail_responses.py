@@ -118,7 +118,6 @@ async def handle_send_response(c):
     o = get_order(order_id)
     client_chat = o.user_id
 
-    # Отправляем ответ клиенту
     if state["data"]["photos"]:
         media = [InputMediaPhoto(media=fid) for fid in state["data"]["photos"]]
         media[0].caption = state["data"]["text"]
@@ -126,13 +125,11 @@ async def handle_send_response(c):
     else:
         await bot.send_message(client_chat, state["data"]["text"])
 
-    # Сохраняем ответ в БД
     d = o.data
     d.setdefault("responses", []).append(state["data"])
     update_order_data(order_id, d)
     del respond_states[c.from_user.id]
 
-    # Предлагаем клиенту подтвердить или отклонить
     markup = InlineKeyboardMarkup(row_width=2)
     markup.add(
         InlineKeyboardButton("✅ Устраивает", callback_data=f"{query_answers.CLIENT_RESPONSE_ACCEPT}:{order_id}"),
@@ -140,7 +137,7 @@ async def handle_send_response(c):
     )
     await bot.send_message(
         client_chat,
-        f"📩 Ответ администратора по заявке #{order_id}. Пожалуйста, подтвердите:",
+        f"📩 Ответ администратора по Вашей заявке. Пожалуйста, подтвердите или добавьте комментарий к заявке - тогда Ваша заявка будет доработана с учетом ваших замечаний.",
         reply_markup=markup
     )
     await bot.send_message(
@@ -158,7 +155,6 @@ async def handle_send_response(c):
 )
 async def admin_view_response(c):
     parts = c.data.split(":")
-    # Показать список всех ответов
     if len(parts) == 3:
         order_id = int(parts[2])
         o = get_order(order_id)
@@ -179,7 +175,6 @@ async def admin_view_response(c):
         )
         await bot.answer_callback_query(c.id)
 
-    # Показать конкретный ответ (текст + кнопки Фото)
     elif len(parts) == 4:
         order_id = int(parts[2])
         idx = int(parts[3])

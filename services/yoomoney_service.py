@@ -27,6 +27,7 @@ class YooMoney:
     #             return False, None
     #     return False, None
 
+    # MOCK
     def check_tx(self, uuid_tx: str):
         history = self.client.operation_history(label=uuid_tx)
         for op in history.operations:
