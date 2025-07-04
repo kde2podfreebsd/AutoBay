@@ -74,7 +74,7 @@ async def render_step(chat_id: int, message_id: int, data: dict, step: str):
         )
 
     elif step == "link":
-        text = f"🔗 Введите ссылку на фото (или нажмите «Пропустить»):\n\n{summary}"
+        text = f"🔗 Введите ссылку на товар с любого сайта(или нажмите «Пропустить»):\n\n{summary}"
         markup.add(
             InlineKeyboardButton("Пропустить", callback_data=query_answers.DETAILS_TO_LINK_SKIP),
             InlineKeyboardButton("↩️ Назад", callback_data=query_answers.DETAILS_TO_BACK),
