@@ -3,7 +3,7 @@ load_dotenv()
 import os
 
 TOKEN = os.getenv("TOKEN")
-ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "406149871"))
+ADMIN_CHAT_ID = int(os.getenv("ADMIN_CHAT_ID", "257524397"))
 ADMINS = [int(x) for x in os.getenv("ADMINS", "406149871,257524397").split(",")]
 
 DB_PATH = os.getenv("DB_PATH", "orders.db")
