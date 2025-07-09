@@ -57,7 +57,7 @@ async def faq(call):
 
         "Спасибо, что выбираете нас! 🙏\n\n"
 
-        '<b>ИП "АКОПЯН АРТУР КАРОЕВИЧ"\nИНН:772402520705</b>'
+        '<b>ООО "ФОРСАЖ"\nИНН:7728282160</b>'
     )
 
     await bot.edit_message_text(text, chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=markup, parse_mode="HTML")
