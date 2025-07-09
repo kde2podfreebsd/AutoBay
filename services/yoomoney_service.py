@@ -18,21 +18,21 @@ class YooMoney:
         )
         return quickpay.base_url, uuid_tx
 
-    # def check_tx(self, uuid_tx: str):
-    #     history = self.client.operation_history(label=uuid_tx)
-    #     for op in history.operations:
-    #         if op.label == uuid_tx:
-    #             if op.status == 'success':
-    #                 return True, op.operation_id
-    #             return False, None
-    #     return False, None
-
-    # MOCK
     def check_tx(self, uuid_tx: str):
         history = self.client.operation_history(label=uuid_tx)
         for op in history.operations:
             if op.label == uuid_tx:
                 if op.status == 'success':
                     return True, op.operation_id
-                return True, True
-        return True, True
+                return False, None
+        return False, None
+
+    # MOCK
+    # def check_tx(self, uuid_tx: str):
+    #     history = self.client.operation_history(label=uuid_tx)
+    #     for op in history.operations:
+    #         if op.label == uuid_tx:
+    #             if op.status == 'success':
+    #                 return True, op.operation_id
+    #             return True, True
+    #     return True, True

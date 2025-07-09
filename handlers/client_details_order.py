@@ -69,7 +69,7 @@ async def render_step(chat_id, mid, data, step):
         )
 
     elif step == "link":
-        text = f"🔗 Введите ссылку на фото (или «Пропустить»):\n\n{summary}"
+        text = f"🔗 Введите ссылку на товар с любого сайта(или нажмите «Пропустить»):\n\n{summary}"
         kb.add(
             InlineKeyboardButton("Пропустить", callback_data=query_answers.DETAILS_ORDER_LINK_SKIP),
             InlineKeyboardButton("↩️ Назад", callback_data=query_answers.DETAILS_ORDER_BACK),
